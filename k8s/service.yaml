@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: bff-seed
+  namespace: oapi
+spec:
+  selector:
+    app: bff-seed
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
