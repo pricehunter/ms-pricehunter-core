@@ -42,7 +42,7 @@ class ProductPriceHistoryUseCaseTest {
 
         //given
         var productId = 1L;
-        var mockedProduct = Optional.of(getMockedProduct());
+        var mockedProduct = Optional.of(getMockedProduct(productId));
         var mockedPriceList = List.of(getMockedPrice());
 
         when(productRepository.getProductById(productId)).thenReturn(mockedProduct);
@@ -63,13 +63,11 @@ class ProductPriceHistoryUseCaseTest {
     void testProductIdDontExists() {
         //given
         var productId = 1L;
-        RuntimeException runtimeException = new RuntimeException();
-        when(productRepository.getProductById(productId)).thenThrow(runtimeException);
+        when(productRepository.getProductById(productId)).thenReturn(Optional.empty());
         //when
         Throwable result = assertThrows(RuntimeException.class, () -> this.useCase.listByProductId(productId));
         //then
         assertNotNull(result);
-        assertEquals(runtimeException, result);
         verify(productRepository, times(1)).getProductById(productId);
         verify(priceHistoryRepository, never()).listByProductId(productId);
 
@@ -79,8 +77,8 @@ class ProductPriceHistoryUseCaseTest {
       return Price.builder().build();
     }
 
-    private Product getMockedProduct() {
-      return Product.builder().build();
+    private Product getMockedProduct(Long id) {
+      return Product.builder().id(id).build();
     }
 
 }

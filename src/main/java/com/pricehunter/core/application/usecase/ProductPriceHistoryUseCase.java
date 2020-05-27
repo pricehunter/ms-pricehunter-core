@@ -28,12 +28,16 @@ public class ProductPriceHistoryUseCase implements ProductPriceHistoryQuery {
     @Override
     public List<Price> listByProductId(Long productId) {
       log.info("Attempt to find product with id: {}", productId);
-      this.productRepository
+      Long savedId = this.productRepository
         .getProductById(productId)
-        .orElseThrow(RuntimeException::new);
-      log.info("product with id: {} was found", productId);
-      log.info("Attempt to get list of prices for product {}", productId);
+        .orElseThrow(() -> {
+          log.error("product with id: {} was not found", productId);
+          return new RuntimeException();
+        })
+        .getId();
+      log.info("product with id: {} was found", savedId);
+      log.info("Attempt to get list of prices for product {}", savedId);
       return this.priceHistoryRepository
-        .listByProductId(productId);
+        .listByProductId(savedId);
     }
 }
