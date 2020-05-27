@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public class PriceHistortyAdapter implements PriceHistoryRepository {
+public class PriceHistoryAdapter implements PriceHistoryRepository {
 
   @Override
   public List<Price> listByProductId(Long productId) {
