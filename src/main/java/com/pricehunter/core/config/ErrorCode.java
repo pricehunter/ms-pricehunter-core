@@ -10,7 +10,9 @@ public enum ErrorCode {
     ABILITY_TIMEOUT(105, "El llamado a Ability devolvio error"),
     TYPE_NOT_FOUND(106, "No se encontro el Tipo del pokemon"),
     TYPE_TIMEOUT(107, "El llamado a Type devolvio error"),
-    WEB_CLIENT_GENERIC(108, "Error del Web Client");
+    WEB_CLIENT_GENERIC(108, "Error del Web Client"),
+
+    PRODUCT_NOT_FOUND(102, "Product not found");
 
     private final int value;
     private final String reasonPhrase;

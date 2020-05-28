@@ -3,6 +3,8 @@ package com.pricehunter.core.application.usecase;
 import com.pricehunter.core.application.port.in.ProductPriceHistoryQuery;
 import com.pricehunter.core.application.port.out.PriceHistoryRepository;
 import com.pricehunter.core.application.port.out.ProductRepository;
+import com.pricehunter.core.config.ErrorCode;
+import com.pricehunter.core.config.exception.ProductNotFoundException;
 import com.pricehunter.core.domain.Price;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ public class ProductPriceHistoryUseCase implements ProductPriceHistoryQuery {
         .getProductById(productId)
         .orElseThrow(() -> {
           log.error("product with id: {} was not found", productId);
-          return new RuntimeException();
+          return new ProductNotFoundException(ErrorCode.PRODUCT_NOT_FOUND);
         })
         .getId();
       log.info("product with id: {} was found", savedId);

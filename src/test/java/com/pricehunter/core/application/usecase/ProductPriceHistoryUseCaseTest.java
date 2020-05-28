@@ -2,6 +2,8 @@ package com.pricehunter.core.application.usecase;
 
 import com.pricehunter.core.application.port.out.PriceHistoryRepository;
 import com.pricehunter.core.application.port.out.ProductRepository;
+import com.pricehunter.core.config.ErrorCode;
+import com.pricehunter.core.config.exception.ProductNotFoundException;
 import com.pricehunter.core.domain.Price;
 import com.pricehunter.core.domain.Product;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,9 +67,10 @@ class ProductPriceHistoryUseCaseTest {
         var productId = 1L;
         when(productRepository.getProductById(productId)).thenReturn(Optional.empty());
         //when
-        Throwable result = assertThrows(RuntimeException.class, () -> this.useCase.listByProductId(productId));
+        ProductNotFoundException result = assertThrows(ProductNotFoundException.class, () -> this.useCase.listByProductId(productId));
         //then
         assertNotNull(result);
+        assertEquals(ErrorCode.PRODUCT_NOT_FOUND, result.getCode());
         verify(productRepository, times(1)).getProductById(productId);
         verify(priceHistoryRepository, never()).listByProductId(productId);
 

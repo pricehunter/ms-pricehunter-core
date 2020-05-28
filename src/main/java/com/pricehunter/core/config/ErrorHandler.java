@@ -10,6 +10,7 @@ import com.pricehunter.core.adapter.rest.exception.NonTargetRestClientException;
 import com.pricehunter.core.adapter.rest.exception.NotFoundRestClientException;
 import com.pricehunter.core.adapter.rest.exception.RestClientGenericException;
 import com.pricehunter.core.adapter.rest.exception.TimeoutRestClientException;
+import com.pricehunter.core.config.exception.ProductNotFoundException;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -77,6 +78,12 @@ public class ErrorHandler {
     public ResponseEntity<ApiErrorResponse> handle(RestClientGenericException ex) {
         log.error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), ex);
         return buildResponseError(HttpStatus.INTERNAL_SERVER_ERROR, ex, ex.getCode());
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handle(ProductNotFoundException ex) {
+      log.error(HttpStatus.NOT_FOUND.getReasonPhrase(), ex);
+      return buildResponseError(HttpStatus.NOT_FOUND, ex, ex.getCode());
     }
 
     private ResponseEntity<ApiErrorResponse> buildResponseError(HttpStatus httpStatus, Throwable ex, ErrorCode errorCode) {
