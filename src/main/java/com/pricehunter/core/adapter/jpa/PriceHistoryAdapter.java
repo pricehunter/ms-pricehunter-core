@@ -1,4 +1,4 @@
-package com.pricehunter.core.adapter.jdbc;
+package com.pricehunter.core.adapter.jpa;
 
 import com.pricehunter.core.application.port.out.PriceHistoryRepository;
 import com.pricehunter.core.domain.Price;
