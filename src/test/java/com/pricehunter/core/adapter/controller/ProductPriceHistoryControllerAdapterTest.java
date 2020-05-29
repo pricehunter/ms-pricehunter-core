@@ -45,7 +45,7 @@ class ProductPriceHistoryControllerAdapterTest {
         //given
         Long productId = 1L;
         List<Price> mockedList = getPriceList();
-        List<PriceRest> expectedResult = PriceRest.toRest(getPriceList());
+        List<PriceRest> expectedResult = PriceRest.toRest(mockedList);
         //when
         when(productPriceHistoryQuery
           .listByProductId(productId))
@@ -55,7 +55,7 @@ class ProductPriceHistoryControllerAdapterTest {
             .perform(get("/api/v1/products/{id}/prices", productId))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(expectedResult)));
+            .andExpect(content().string(objectMapper.writeValueAsString(expectedResult)));
     }
 
     private List<Price> getPriceList() {

@@ -19,7 +19,6 @@ public class PriceRest {
 
     Long id;
     Double value;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     LocalDateTime date;
 
     public static List<PriceRest> toRest(List<Price> priceList) {
