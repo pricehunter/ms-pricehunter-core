@@ -12,7 +12,6 @@
         <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
             <destination>${LOGSTASH_URL:-logstash:5000}</destination>
             <keepAliveDuration>5 minutes</keepAliveDuration>
-            <waitStrategyType>sleeping</waitStrategyType>
             <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
                 <providers>
                     <mdc/>
