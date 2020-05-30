@@ -62,6 +62,10 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
 
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'redis.clients:jedis:3.2.0'
+
     //testImplementation 'org.springframework.kafka:spring-kafka-test'
 
 }

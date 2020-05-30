@@ -5,6 +5,7 @@ import com.pricehunter.core.config.ErrorCode;
 import com.pricehunter.core.config.exception.ProductNotFoundException;
 import com.pricehunter.core.domain.Product;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,9 @@ public class ProductService {
       this.productRepository = productRepository;
     }
 
+    @Cacheable(value = "productCache",
+      cacheManager = "cacheManager",
+      key = "#root.targetClass.packageName+'.'+#id")
     public Product getById(Long id) {
       log.info("Attempt to find product with id: {}", id);
       Product savedProduct = this

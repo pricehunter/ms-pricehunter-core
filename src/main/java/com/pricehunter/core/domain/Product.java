@@ -1,5 +1,6 @@
 package com.pricehunter.core.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +36,7 @@ public class Product {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,
     mappedBy = "product")
   @Builder.Default
+  @JsonIgnore
   private Set<Price> prices = Set.of();
 
   public Product addPrice(Double price) {
