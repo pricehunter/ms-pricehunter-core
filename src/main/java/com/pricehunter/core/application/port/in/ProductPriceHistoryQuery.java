@@ -2,9 +2,9 @@ package com.pricehunter.core.application.port.in;
 
 import com.pricehunter.core.domain.Price;
 
-import java.util.List;
+import java.util.Set;
 
 public interface ProductPriceHistoryQuery {
 
-    List<Price> listByProductId(Long productId);
+    Set<Price> listByProductId(Long productId);
 }

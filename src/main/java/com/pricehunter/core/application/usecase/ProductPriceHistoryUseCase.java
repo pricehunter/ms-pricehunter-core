@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -28,7 +28,7 @@ public class ProductPriceHistoryUseCase implements ProductPriceHistoryQuery {
     }
 
     @Override
-    public List<Price> listByProductId(Long productId) {
+    public Set<Price> listByProductId(Long productId) {
       log.info("Attempt to find product with id: {}", productId);
       Long savedId = this.productRepository
         .getProductById(productId)

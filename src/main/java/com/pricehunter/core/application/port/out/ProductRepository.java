@@ -8,5 +8,5 @@ public interface ProductRepository {
 
     Optional<Product> getProductById(Long id);
 
-    Product save(Product product);
+    Long save(Product product);
 }

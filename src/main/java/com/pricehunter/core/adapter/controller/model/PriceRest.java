@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Value
@@ -21,8 +22,8 @@ public class PriceRest {
     Double value;
     LocalDateTime date;
 
-    public static List<PriceRest> toRest(List<Price> priceList) {
-        return priceList.parallelStream().map(PriceRest::toRest).collect(Collectors.toList());
+    public static Set<PriceRest> toRest(Set<Price> priceList) {
+        return priceList.parallelStream().map(PriceRest::toRest).collect(Collectors.toSet());
     }
 
     public static PriceRest toRest(Price price) {

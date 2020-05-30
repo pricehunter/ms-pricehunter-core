@@ -18,9 +18,19 @@ public class CreateProductUseCase implements CreateProductCommand {
 
     @Override
     public Long create(Command command) {
-        log.info("product to save {}", command.getProduct());
-        Product result = this.productRepository.save(command.getProduct());
+        log.info("product to save {}", command);
+        Product product = buildProduct(command);
+        Long result = this.productRepository.save(product);
         log.info("product was save successfully {}", result);
-        return result.getId();
+        return result;
     }
+
+  private Product buildProduct(Command command) {
+    return Product
+      .builder()
+      .name(command.getName())
+      .description(command.getDescription())
+      .build()
+      .addPrice(command.getPrice());
+  }
 }

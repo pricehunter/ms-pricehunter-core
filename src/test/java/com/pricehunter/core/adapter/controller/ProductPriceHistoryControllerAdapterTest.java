@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
@@ -44,8 +45,8 @@ class ProductPriceHistoryControllerAdapterTest {
     void listPriceHistoryOK() throws Exception {
         //given
         Long productId = 1L;
-        List<Price> mockedList = getPriceList();
-        List<PriceRest> expectedResult = PriceRest.toRest(mockedList);
+        Set<Price> mockedList = getPriceList();
+        Set<PriceRest> expectedResult = PriceRest.toRest(mockedList);
         //when
         when(productPriceHistoryQuery
           .listByProductId(productId))
@@ -58,8 +59,8 @@ class ProductPriceHistoryControllerAdapterTest {
             .andExpect(content().string(objectMapper.writeValueAsString(expectedResult)));
     }
 
-    private List<Price> getPriceList() {
-      return List.of(Price.builder().id(1L).value(123.8).date(LocalDateTime.now()).build());
+    private Set<Price> getPriceList() {
+      return Set.of(Price.builder().id(1L).value(123.8).date(LocalDateTime.now()).build());
     }
 
     @Test

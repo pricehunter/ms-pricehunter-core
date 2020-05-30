@@ -17,8 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -84,6 +86,14 @@ public class ErrorHandler {
     public ResponseEntity<ApiErrorResponse> handle(ProductNotFoundException ex) {
       log.error(HttpStatus.NOT_FOUND.getReasonPhrase(), ex);
       return buildResponseError(HttpStatus.NOT_FOUND, ex, ex.getCode());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> handleValidationExceptions(
+      MethodArgumentNotValidException ex) {
+      log.error(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex);
+      return buildResponseError(HttpStatus.BAD_REQUEST, ex, ErrorCode.BAD_REQUEST);
     }
 
     private ResponseEntity<ApiErrorResponse> buildResponseError(HttpStatus httpStatus, Throwable ex, ErrorCode errorCode) {

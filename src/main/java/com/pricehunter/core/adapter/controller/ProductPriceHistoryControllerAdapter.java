@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -22,10 +23,10 @@ public final class ProductPriceHistoryControllerAdapter {
     }
 
     @GetMapping("/{id}/prices")
-    public List<PriceRest> listPrices(@PathVariable("id") Long id) {
+    public Set<PriceRest> listPrices(@PathVariable("id") Long id) {
 
         log.info("Call to /products/{}/prices", id);
-        List<PriceRest> pricesView = PriceRest
+        Set<PriceRest> pricesView = PriceRest
           .toRest(this.productPriceHistoryQuery.listByProductId(id));
         log.info("Response of services list prices: {}", pricesView);
 

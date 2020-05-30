@@ -12,7 +12,9 @@ public enum ErrorCode {
     TYPE_TIMEOUT(107, "El llamado a Type devolvio error"),
     WEB_CLIENT_GENERIC(108, "Error del Web Client"),
 
-    PRODUCT_NOT_FOUND(102, "Product not found");
+    PRODUCT_NOT_FOUND(102, "Product not found"),
+    BAD_REQUEST(109, "Bad request creating entity");
+
 
     private final int value;
     private final String reasonPhrase;

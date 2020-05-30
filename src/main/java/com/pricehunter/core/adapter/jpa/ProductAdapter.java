@@ -21,7 +21,7 @@ public class ProductAdapter implements ProductRepository {
   }
 
   @Override
-  public Product save(Product product) {
-    return this.productRepository.save(product);
+  public Long save(Product product) {
+    return this.productRepository.save(product).getId();
   }
 }
