@@ -1,7 +1,7 @@
 package com.pricehunter.core.application.usecase;
 
 import com.pricehunter.core.application.port.out.PriceHistoryRepository;
-import com.pricehunter.core.application.port.out.ProductRepository;
+import com.pricehunter.core.application.usecase.service.ProductService;
 import com.pricehunter.core.config.ErrorCode;
 import com.pricehunter.core.config.exception.ProductNotFoundException;
 import com.pricehunter.core.domain.Price;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,14 +27,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ProductPriceHistoryUseCaseTest {
 
-    private ProductRepository productRepository = mock(ProductRepository.class);
+    private ProductService productService = mock(ProductService.class);
     private PriceHistoryRepository priceHistoryRepository = mock(PriceHistoryRepository.class);
 
     private ProductPriceHistoryUseCase useCase;
 
     @BeforeEach
     public void init() {
-      this.useCase = new ProductPriceHistoryUseCase(priceHistoryRepository, productRepository);
+      this.useCase = new ProductPriceHistoryUseCase(priceHistoryRepository, productService);
     }
 
     @Test
@@ -44,10 +43,10 @@ class ProductPriceHistoryUseCaseTest {
 
         //given
         var productId = 1L;
-        var mockedProduct = Optional.of(getMockedProduct(productId));
+        var mockedProduct = getMockedProduct(productId);
         var mockedPriceList = Set.of(getMockedPrice());
 
-        when(productRepository.getProductById(productId)).thenReturn(mockedProduct);
+        when(productService.getById(productId)).thenReturn(mockedProduct);
         when(priceHistoryRepository.listByProductId(productId)).thenReturn(mockedPriceList);
 
         //when
@@ -56,7 +55,7 @@ class ProductPriceHistoryUseCaseTest {
         //then
         assertNotNull(result);
         assertEquals(mockedPriceList, result);
-        verify(productRepository, times(1)).getProductById(productId);
+        verify(productService, times(1)).getById(productId);
         verify(priceHistoryRepository, times(1)).listByProductId(productId);
     }
 
@@ -65,15 +64,14 @@ class ProductPriceHistoryUseCaseTest {
     void testProductIdDontExists() {
         //given
         var productId = 1L;
-        when(productRepository.getProductById(productId)).thenReturn(Optional.empty());
+        when(productService.getById(productId)).thenThrow(new ProductNotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
         //when
         ProductNotFoundException result = assertThrows(ProductNotFoundException.class, () -> this.useCase.listByProductId(productId));
         //then
         assertNotNull(result);
         assertEquals(ErrorCode.PRODUCT_NOT_FOUND, result.getCode());
-        verify(productRepository, times(1)).getProductById(productId);
+        verify(productService, times(1)).getById(productId);
         verify(priceHistoryRepository, never()).listByProductId(productId);
-
     }
 
     private Price getMockedPrice() {

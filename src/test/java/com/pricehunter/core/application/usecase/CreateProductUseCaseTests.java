@@ -36,7 +36,7 @@ class CreateProductUseCaseTests {
 
     @BeforeEach
     public void init() {
-      this.useCase = new CreateProductUseCase(productRepository);
+      this.useCase = new  CreateProductUseCase(productRepository);
     }
 
     @Test
@@ -61,10 +61,6 @@ class CreateProductUseCaseTests {
         assertNotNull(result);
         assertEquals(productId, result);
         verify(productRepository, times(1)).save(any(Product.class));
-    }
-
-    private Product getMockedProduct(Long id) {
-      return Product.builder().id(id).build();
     }
 
 }

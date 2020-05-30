@@ -1,6 +1,7 @@
 package com.pricehunter.core.application.usecase;
 
 import com.pricehunter.core.application.port.out.ProductRepository;
+import com.pricehunter.core.application.usecase.service.ProductService;
 import com.pricehunter.core.config.ErrorCode;
 import com.pricehunter.core.config.exception.ProductNotFoundException;
 import com.pricehunter.core.domain.Product;
@@ -24,13 +25,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ProductUseCaseTest {
 
-    private ProductRepository productRepository = mock(ProductRepository.class);
+    private ProductService productService = mock(ProductService.class);
 
     private ProductUseCase useCase;
 
     @BeforeEach
     public void init() {
-      this.useCase = new ProductUseCase(productRepository);
+      this.useCase = new ProductUseCase(productService);
     }
 
     @Test
@@ -41,7 +42,7 @@ class ProductUseCaseTest {
         var productId = 1L;
         var mockedProduct = getMockedProduct(productId);
 
-        when(productRepository.getProductById(productId)).thenReturn(Optional.of(mockedProduct));
+        when(productService.getById(productId)).thenReturn(mockedProduct);
 
         //when
         Product result = this.useCase.getById(productId);
@@ -49,22 +50,7 @@ class ProductUseCaseTest {
         //then
         assertNotNull(result);
         assertEquals(mockedProduct, result);
-        verify(productRepository, times(1)).getProductById(productId);
-    }
-
-    @Test()
-    @DisplayName("When a product id dont exists exception will occur")
-    void testProductIdDontExists() {
-        //given
-        var productId = 1L;
-        when(productRepository.getProductById(productId)).thenReturn(Optional.empty());
-        //when
-        ProductNotFoundException result = assertThrows(ProductNotFoundException.class, () -> this.useCase.getById(productId));
-        //then
-        assertNotNull(result);
-        assertEquals(ErrorCode.PRODUCT_NOT_FOUND, result.getCode());
-        verify(productRepository, times(1)).getProductById(productId);
-
+        verify(productService, times(1)).getById(productId);
     }
 
     private Product getMockedProduct(Long id) {
