@@ -1,5 +1,7 @@
 # Backend for frontend - Seed
 
+![Java CI with Gradle](https://github.com/pricehunter/ms-pricehunter-core/workflows/Java%20CI%20with%20Gradle/badge.svg?branch=master)
+
 Esta basado en el principio de Clean Architecture.
 
 ![alt text](docs/clean.png)
