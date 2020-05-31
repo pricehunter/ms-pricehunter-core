@@ -1,14 +1,30 @@
 package com.pricehunter.core.config;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.sleuth.instrument.async.LazyTraceExecutor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -18,9 +34,13 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 
 @Configuration
+@EnableCaching
 @Slf4j
 public class AppConfig implements WebMvcConfigurer {
 
@@ -31,10 +51,18 @@ public class AppConfig implements WebMvcConfigurer {
 
     private final TraceSleuthInterceptor traceSleuthInterceptor;
     private final BeanFactory beanFactory;
+    private final boolean isSentinelEnabled;
+    private final RedisProperties redisProperties;
 
-    public AppConfig(TraceSleuthInterceptor traceSleuthInterceptor, BeanFactory beanFactory) {
+    public AppConfig(
+      TraceSleuthInterceptor traceSleuthInterceptor,
+      BeanFactory beanFactory,
+      @Value("${cache.redis.sentinel:false}") final Boolean isSentinelEnabled,
+      RedisProperties redisProperties) {
         this.traceSleuthInterceptor = traceSleuthInterceptor;
         this.beanFactory = beanFactory;
+        this.isSentinelEnabled = isSentinelEnabled;
+        this.redisProperties = redisProperties;
     }
 
     @Override
@@ -78,5 +106,54 @@ public class AppConfig implements WebMvcConfigurer {
                 .interceptors(new LogRestTemplateInterceptor())
                 .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
                 .build();
+    }
+
+    @Bean
+    public RedisConnectionFactory jedisConnectionFactory() {
+
+      if (isSentinelEnabled && Objects.nonNull(redisProperties.getSentinel())) {
+        final RedisSentinelConfiguration redisSentinelConfiguration = new RedisSentinelConfiguration(
+          redisProperties.getSentinel().getMaster(), new HashSet<>(redisProperties.getSentinel().getNodes()));
+
+        return new JedisConnectionFactory(redisSentinelConfiguration);
+      }
+
+      RedisStandaloneConfiguration standaloneConfig = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
+      standaloneConfig.setPassword(Optional
+        .ofNullable(redisProperties.getPassword())
+        .map(RedisPassword::of)
+        .orElse(RedisPassword.none()));
+      return new JedisConnectionFactory(standaloneConfig);
+    }
+
+    @Bean
+    @Primary
+    public RedisCacheManager cacheManager(
+      @Value("${redis.cache.ttl.days:1}") int defaultTtl,
+      @Value("${redis.cache.ttl.product.hours}") int productTTL,
+      @Qualifier("jedisConnectionFactory")
+        RedisConnectionFactory connectionFactory) {
+      val cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
+        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+        .entryTtl(Duration.ofDays(defaultTtl));
+
+      val productCache = RedisCacheConfiguration.defaultCacheConfig()
+        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+        .entryTtl(Duration.ofHours(productTTL));
+
+      return RedisCacheManager
+        .builder(connectionFactory)
+        .cacheDefaults(cacheConfig)
+        .withCacheConfiguration("productCache", productCache)
+        .build();
+    }
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate() {
+      RedisTemplate<String, Object> template = new RedisTemplate<>();
+      template.setKeySerializer(new StringRedisSerializer());
+      template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+      template.setConnectionFactory(jedisConnectionFactory());
+      return template;
     }
 }
