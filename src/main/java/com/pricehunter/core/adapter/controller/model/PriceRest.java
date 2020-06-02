@@ -2,14 +2,11 @@ package com.pricehunter.core.adapter.controller.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.pricehunter.core.domain.Pokemon;
 import com.pricehunter.core.domain.Price;
 import lombok.Builder;
 import lombok.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,10 +25,10 @@ public class PriceRest {
 
     public static PriceRest toRest(Price price) {
         return PriceRest
-          .builder()
-          .id(price.getId())
-          .date(price.getDate())
-          .value(price.getValue())
-          .build();
+                .builder()
+                .id(price.getId())
+                .date(price.getDate())
+                .value(price.getValue())
+                .build();
     }
 }
