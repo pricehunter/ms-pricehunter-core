@@ -1,5 +1,15 @@
 # Backend for frontend - Seed
 
+## GetStarted
+
+Consideraciones para correr el proyecto:
+
+   * **java:** Necesitas java 11   
+   * **gradle:** Necesitas gradle (6.5 funciona)
+   * **lombok:** Necesitas el plugin de lombok para que no te queden rojo los builders y log
+   * **annotations:** Necesitas habilitar "enable annotation processing" en Build / Compile settings
+   * **enviroment:** Asegurate de tener configurado un ambiente, por defecto local
+ 
 ![Java CI with Gradle](https://github.com/pricehunter/ms-pricehunter-core/workflows/Java%20CI%20with%20Gradle/badge.svg?branch=master)
 
 Esta basado en el principio de Clean Architecture.
