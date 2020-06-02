@@ -13,6 +13,6 @@ public interface CreatePokemonCommand {
     @Value
     @Builder
     class Command {
-       private Pokemon pokemon;
+       Pokemon pokemon;
     }
 }
